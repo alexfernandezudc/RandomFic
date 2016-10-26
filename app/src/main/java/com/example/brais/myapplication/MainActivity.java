@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_nuevo) {
             modelList.add("Nueva categoría");
             lista.invalidateViews();
-            System.out.println("esto es una pruebaaaa");
+            System.out.println("esto es una pruebaaasdfsdfa");
         }
 
         return super.onOptionsItemSelected(item);
