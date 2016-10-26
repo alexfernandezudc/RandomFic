@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 final View v = inflater.inflate(R.layout.input_dialog, null);
                 builder.setView(v);
                 builder.setTitle(R.string.dialog_title_edit_category);
+                // Handler botón aceptar del diálogo.
                 builder.setPositiveButton(R.string.dialog_positive_button_label, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface d, int which) {
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                         lista.invalidateViews();
                     }
                 });
+                // Handler botón cancelar del diálogo
                 builder.setNegativeButton(R.string.dialog_negative_button_label, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface d, int which) {

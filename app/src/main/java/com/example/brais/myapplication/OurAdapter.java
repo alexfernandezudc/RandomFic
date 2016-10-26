@@ -49,16 +49,6 @@ public class OurAdapter extends BaseAdapter implements ListAdapter {
         return 0;
     }
 
-    // Handlers help methods
-
-    // Guarda los cambios editados en la lista y en la etiqueta de la fila.
-    public void saveChangesAndNotify(EditText editText, TextView listItemText, int position){
-        String newText = editText.getText().toString();
-        listItemText.setText(newText);
-        list.set(position,newText);
-        notifyDataSetChanged();
-    }
-
     @TargetApi(Build.VERSION_CODES.CUPCAKE)
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
