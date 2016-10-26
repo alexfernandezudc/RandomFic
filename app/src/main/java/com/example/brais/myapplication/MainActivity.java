@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Cargamos los datos
         if (savedInstanceState == null)
-            this.modelList = new ArrayList<String>();
+            this.modelList = new ArrayList<>();
         else
             this.modelList = savedInstanceState.getStringArrayList("lista");
 
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_nuevo) {
             modelList.add("Nueva categoría");
             lista.invalidateViews();
+            System.out.println("esto es una pruebaaaa");
         }
 
         return super.onOptionsItemSelected(item);
