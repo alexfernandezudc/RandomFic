@@ -1,6 +1,7 @@
 package com.example.brais.myapplication;
 
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +20,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -27,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> modelList;
     ListView lista = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,26 +55,26 @@ public class MainActivity extends AppCompatActivity {
         lista.setAdapter(adapter);
         lista.setLongClickable(true);
 
-        lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+        lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> arg0,View view, final int pos, long id){
+            public boolean onItemLongClick(AdapterView<?> arg0, View view, final int pos, long id) {
                 // Instanciamos el dialogo y añadimos el manejador del botón aceptar
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 LayoutInflater inflater = getLayoutInflater();
-                final View v = inflater.inflate(R.layout.input_dialog,null);
+                final View v = inflater.inflate(R.layout.input_dialog, null);
                 builder.setView(v);
-                builder.setTitle("Añadir categoría");
-                builder.setPositiveButton("Aceptar",new DialogInterface.OnClickListener() {
+                builder.setTitle(R.string.dialog_title_edit_category);
+                builder.setPositiveButton(R.string.dialog_positive_button_label, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface d, int which) {
                         EditText editText = (EditText) v.findViewById(R.id.categoryInput);
-                        modelList.set(pos,editText.getText().toString());
+                        modelList.set(pos, editText.getText().toString());
                         lista.invalidateViews();
                     }
                 });
-                builder.setNegativeButton("Cancelar",new DialogInterface.OnClickListener(){
+                builder.setNegativeButton(R.string.dialog_negative_button_label, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface d, int which){
+                    public void onClick(DialogInterface d, int which) {
                         d.cancel();
                     }
                 });
@@ -78,40 +83,37 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.opciones) {
-            return true;
-        } else if (id == R.id.action_nuevo) {
-            modelList.add("Nueva categoría");
-            lista.invalidateViews();
-            System.out.println("esto es una pruebaaasdfsdfa");
+        switch (item.getItemId()) {
+            case R.id.opciones:
+                return true;
+            case R.id.action_nuevo:
+                modelList.add("" + R.string.default_category_name);
+                lista.invalidateViews();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState){
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putStringArrayList("lista",this.modelList);
+        savedInstanceState.putStringArrayList("lista", this.modelList);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         this.modelList = savedInstanceState.getStringArrayList("lista");
     }
