@@ -6,9 +6,11 @@ import java.util.ArrayList;
  * Created by brais on 26/10/16.
  */
 
-public class Category {
+public class Category extends ArrayList{
 
-    private ArrayList<String> items = new ArrayList<>();
+    private String name = null;
 
-
+    public Category(String name){
+        this.name = name;
+    }
 }
