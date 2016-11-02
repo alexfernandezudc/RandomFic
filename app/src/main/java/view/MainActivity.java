@@ -25,13 +25,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
+import model.Category;
+import model.CategoryAdapter;
 import model.OurAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String PERSISTENCE_FILE = "categorydb";
 
-    private ArrayList<String> modelList;
+    private ArrayList<Category> modelList;
     private ListView lista = null;
 
     @Override
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Preparamos el adaptador
-        final OurAdapter adapter = new OurAdapter(modelList, this);
+        final CategoryAdapter adapter = new CategoryAdapter(modelList, this);
         lista = (ListView) findViewById(R.id.listView);
         lista.setAdapter(adapter);
         lista.setLongClickable(true);
@@ -64,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface d, int which) {
                         EditText editText = (EditText) v.findViewById(R.id.categoryInput);
-                        modelList.set(pos,editText.getText().toString());
+                        Category c = modelList.get(pos);
+                        c.setName(editText.getText().toString());
                         lista.invalidateViews();
                     }
                 });
@@ -95,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.opciones:
                 return true;
             case R.id.action_nuevo:
-                modelList.add("Nueva categoría");
+                Category newCategory = new Category("Nueva categoría");
+                modelList.add(newCategory);
                 lista.invalidateViews();
                 break;
         }
@@ -103,14 +107,19 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onStop(){
         super.onStop();
         try {
             FileOutputStream outFile = openFileOutput(PERSISTENCE_FILE, Context.MODE_PRIVATE);
             OutputStreamWriter out = new OutputStreamWriter(outFile);
-            for (String c : modelList)
-                out.write(c+"\n");
+            for (Category c : modelList) {
+                out.write(c.getName() + ",");
+                for (String item : c.getItems())
+                    out.write(item + ",");
+                out.write("\n");
+            }
             out.close();
             System.out.println("Datos guardados con éxito!");
         } catch (FileNotFoundException e){
@@ -122,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Recupera los datos de la aplicación desde el fichero de persistencia.
-     */
+    **/
     private void cargarCategorias(){
         try{
             InputStream inStream = openFileInput(PERSISTENCE_FILE);
@@ -131,10 +140,18 @@ public class MainActivity extends AppCompatActivity {
                 InputStreamReader inReader = new InputStreamReader(inStream);
                 BufferedReader buffReader  = new BufferedReader(inReader);
 
-                String newCategory = "";
+                String line = "";
 
-                while ((newCategory = buffReader.readLine()) != null)
+                while ((line = buffReader.readLine()) != null){
+                    System.out.println(line);
+                    String [] items = line.split(",");
+                    Category newCategory = new Category(items[0]);
+                    int i = 1;
+                    for (i=1;items.length > i;i++)
+                        newCategory.newItem(items[i]);
                     modelList.add(newCategory);
+                }
+
                 inStream.close();
             }
             lista.invalidateViews();
