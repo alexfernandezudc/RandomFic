@@ -1,4 +1,4 @@
-package com.example.brais.myapplication;
+package model;
 
 import java.util.ArrayList;
 

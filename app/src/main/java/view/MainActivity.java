@@ -1,37 +1,31 @@
-package com.example.brais.myapplication;
+package view;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import com.example.brais.myapplication.R;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.LinkedList;
+
+import model.OurAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,13 +39,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-    /**
-        // Cargamos los datos
-        if (savedInstanceState == null)
-            this.modelList = new ArrayList<>();
-        else
-            this.modelList = savedInstanceState.getStringArrayList("lista");
-**/
         this.modelList = new ArrayList<>();
         // Instanciamos la toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -89,12 +76,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 builder.show();
-
                 return true;
             }
         });
-
-
         cargarCategorias();
     }
 
@@ -136,20 +120,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/**
-    @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putStringArrayList("lista", this.modelList);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        this.modelList = savedInstanceState.getStringArrayList("lista");
-    }
-**/
-
+    /**
+     * Recupera los datos de la aplicación desde el fichero de persistencia.
+     */
     private void cargarCategorias(){
         try{
             InputStream inStream = openFileInput(PERSISTENCE_FILE);
@@ -159,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader buffReader  = new BufferedReader(inReader);
 
                 String newCategory = "";
-                StringBuilder stringBuilder = new StringBuilder();
 
                 while ((newCategory = buffReader.readLine()) != null)
                     modelList.add(newCategory);
@@ -172,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e){
             System.out.println(e);
         }
-
     }
 
 }

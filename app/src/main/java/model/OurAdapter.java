@@ -1,4 +1,4 @@
-package com.example.brais.myapplication;
+package model;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -17,18 +17,20 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import com.example.brais.myapplication.R;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class CategoryAdapter extends BaseAdapter implements ListAdapter {
+public class OurAdapter extends BaseAdapter implements ListAdapter {
 
-    private ArrayList<Category> list ;
+    private ArrayList<String> list = new ArrayList<String>();
     private Context context;
 
 
-    public CategoryAdapter(ArrayList<Category> list, Context context) {
+    public OurAdapter(ArrayList<String> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -60,7 +62,7 @@ public class CategoryAdapter extends BaseAdapter implements ListAdapter {
 
         //Handle TextView and display string from your list
         final TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
-        listItemText.setText(list.get(position).getName());
+        listItemText.setText(list.get(position));
 
         //Handle buttons and add onClickListeners
         Button deleteBtn  = (Button) view.findViewById(R.id.delete_button);

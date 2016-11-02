@@ -1,34 +1,29 @@
-package com.example.brais.myapplication;
+package model;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.example.brais.myapplication.R;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-public class OurAdapter extends BaseAdapter implements ListAdapter {
+import model.Category;
 
-    private ArrayList<String> list = new ArrayList<String>();
+public class CategoryAdapter extends BaseAdapter implements ListAdapter {
+
+    private ArrayList<Category> list ;
     private Context context;
 
 
-    public OurAdapter(ArrayList<String> list, Context context) {
+    public CategoryAdapter(ArrayList<Category> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -60,7 +55,7 @@ public class OurAdapter extends BaseAdapter implements ListAdapter {
 
         //Handle TextView and display string from your list
         final TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
-        listItemText.setText(list.get(position));
+        listItemText.setText(list.get(position).getName());
 
         //Handle buttons and add onClickListeners
         Button deleteBtn  = (Button) view.findViewById(R.id.delete_button);
