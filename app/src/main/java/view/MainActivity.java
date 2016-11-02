@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> av, View view, final int pos, long id){
                 Category selectedCategory = modelList.get(pos);
-                selectedCategory.newItem("Hola buenas");
-                selectedCategory.newItem("Hola noches");
                 // Almacenar datos que le pasamos a la otra actividad
                 Intent i = new Intent(getApplicationContext(),CategoryActivity.class);
                 i.putExtra("categoryName",selectedCategory.getName());
