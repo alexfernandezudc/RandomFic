@@ -1,5 +1,6 @@
 package com.example.brais.myapplication;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
@@ -20,26 +21,38 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<String> modelList;
-    ListView lista = null;
+    private static String PERSISTENCE_FILE = "categorydb";
+
+    private ArrayList<String> modelList;
+    private ListView lista = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+    /**
         // Cargamos los datos
         if (savedInstanceState == null)
             this.modelList = new ArrayList<>();
         else
             this.modelList = savedInstanceState.getStringArrayList("lista");
-
+**/
+        this.modelList = new ArrayList<>();
         // Instanciamos la toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface d, int which) {
                         EditText editText = (EditText) v.findViewById(R.id.categoryInput);
-                        modelList.set(pos, editText.getText().toString());
+                        modelList.set(pos,editText.getText().toString());
                         lista.invalidateViews();
                     }
                 });
@@ -80,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
+        cargarCategorias();
     }
 
     @Override
@@ -95,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.opciones:
                 return true;
             case R.id.action_nuevo:
-                modelList.add("" + R.string.default_category_name);
+                modelList.add("Nueva categoría");
                 lista.invalidateViews();
                 break;
         }
@@ -103,6 +119,24 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onStop(){
+        super.onStop();
+        try {
+            FileOutputStream outFile = openFileOutput(PERSISTENCE_FILE, Context.MODE_PRIVATE);
+            OutputStreamWriter out = new OutputStreamWriter(outFile);
+            for (String c : modelList)
+                out.write(c+"\n");
+            out.close();
+            System.out.println("Datos guardados con éxito!");
+        } catch (FileNotFoundException e){
+            System.out.println(e + " | PERSISTENCE FILE NO ENCONTRADA");
+        } catch (IOException e){
+            System.out.println(e);
+        }
+    }
+
+/**
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -113,6 +147,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         this.modelList = savedInstanceState.getStringArrayList("lista");
+    }
+**/
+
+    private void cargarCategorias(){
+        try{
+            InputStream inStream = openFileInput(PERSISTENCE_FILE);
+
+            if (inStream != null){
+                InputStreamReader inReader = new InputStreamReader(inStream);
+                BufferedReader buffReader  = new BufferedReader(inReader);
+
+                String newCategory = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((newCategory = buffReader.readLine()) != null)
+                    modelList.add(newCategory);
+                inStream.close();
+            }
+            lista.invalidateViews();
+
+        }  catch (FileNotFoundException e){
+            System.out.println(e + " | PERSISTENCE FILE NO ENCONTRADA");
+        } catch (IOException e){
+            System.out.println(e);
+        }
+
     }
 
 }

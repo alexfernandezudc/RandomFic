@@ -8,6 +8,7 @@
         android:layout_height="match_parent"
         android:inputType="text"
         android:hint="Nueva categoría"
+        android:layout_marginLeft="5dp"
         />
 
 </LinearLayout>
