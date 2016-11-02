@@ -3,7 +3,7 @@ package model;
 import java.util.ArrayList;
 
 /**
- * yeeeseeeeeeeeeeeee
+ * author brais
  */
 
 public class Category{

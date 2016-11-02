@@ -29,7 +29,7 @@ import model.OurAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String PERSISTENCE_FILE = "categorydb";
+    private final static String PERSISTENCE_FILE = "categorydb";
 
     private ArrayList<String> modelList;
     private ListView lista = null;
