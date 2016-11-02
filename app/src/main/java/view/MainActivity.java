@@ -2,6 +2,7 @@ package view;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,23 @@ public class MainActivity extends AppCompatActivity {
         final CategoryAdapter adapter = new CategoryAdapter(modelList, this);
         lista = (ListView) findViewById(R.id.listView);
         lista.setAdapter(adapter);
+        lista.setClickable(true);
         lista.setLongClickable(true);
+
+        lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> av, View view, final int pos, long id){
+                Category selectedCategory = modelList.get(pos);
+                selectedCategory.newItem("Hola buenas");
+                selectedCategory.newItem("Hola noches");
+                // Almacenar datos que le pasamos a la otra actividad
+                Intent i = new Intent(getApplicationContext(),CategoryActivity.class);
+                i.putExtra("categoryName",selectedCategory.getName());
+                i.putStringArrayListExtra("categoryItems",selectedCategory.getItems());
+                // Arrancar nueva actividad
+                startActivity(i);
+            }
+        });
 
         lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override

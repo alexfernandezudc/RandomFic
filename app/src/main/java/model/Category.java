@@ -20,6 +20,8 @@ public class Category{
 
     public void setName(String newName){this.name = newName;}
 
+    public void setItems(ArrayList<String> items) {this.items = items; }
+
     public ArrayList<String> getItems() { return this.items;}
 
     public void newItem(String newItem){
