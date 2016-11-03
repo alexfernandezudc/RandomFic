@@ -11,6 +11,6 @@
         android:id="@+id/action_nuevo"
         android:title="@string/action_nuevo"
         android:icon="@drawable/button_add"
-        android:orderInCategory="100"
+        android:orderInCategory="10"
         app:showAsAction="ifRoom" />
 </menu>

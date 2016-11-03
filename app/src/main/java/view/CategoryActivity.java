@@ -67,6 +67,7 @@ public class CategoryActivity extends AppCompatActivity {
                         EditText editText = (EditText) v.findViewById(R.id.categoryInput);
                         category.getItems().set(pos,editText.getText().toString());
                         lista.invalidateViews();
+                        prepararResultados();
                     }
                 });
                 // Handler botón cancelar del diálogo
@@ -80,6 +81,7 @@ public class CategoryActivity extends AppCompatActivity {
                 return true;
             }
         });
+        prepararResultados();
     }
 
 
@@ -100,9 +102,18 @@ public class CategoryActivity extends AppCompatActivity {
                 String newItem = new String("Nueva item");
                 category.newItem(newItem);
                 lista.invalidateViews();
+                prepararResultados();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void prepararResultados(){
+        Intent resultado = new Intent();
+        resultado.putExtra("categoryName",category.getName());
+        resultado.putExtra("categoryItems",category.getItems());
+        setResult(getIntent().getIntExtra("pos",0),resultado);
+    }
+
 }

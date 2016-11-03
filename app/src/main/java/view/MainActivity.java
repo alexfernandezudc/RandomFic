@@ -62,8 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent i = new Intent(getApplicationContext(),CategoryActivity.class);
                 i.putExtra("categoryName",selectedCategory.getName());
                 i.putStringArrayListExtra("categoryItems",selectedCategory.getItems());
+                i.putExtra("pos",pos);
                 // Arrancar nueva actividad
-                startActivity(i);
+                startActivityForResult(i,pos);
             }
         });
 
@@ -144,6 +145,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int ResultCode, Intent result) {
+        Category modifiedCategory = new Category(result.getStringExtra("categoryName"));
+        modifiedCategory.setItems(result.getStringArrayListExtra("categoryItems"));
+        modelList.set(ResultCode, modifiedCategory);
+        lista.invalidateViews();
+    }
     /**
      * Recupera los datos de la aplicación desde el fichero de persistencia.
     **/
