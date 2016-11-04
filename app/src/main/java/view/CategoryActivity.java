@@ -1,7 +1,10 @@
 package view;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.brais.myapplication.R;
 
@@ -28,6 +32,10 @@ public class CategoryActivity extends AppCompatActivity {
 
     private Category category = null;
     private ListView lista = null;
+    // Atributos ligados al sensor de agitamiento
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private ShakeDetector mShakeDetector;
 
     @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +89,22 @@ public class CategoryActivity extends AppCompatActivity {
                 return true;
             }
         });
+        // Preparamos el detector de agitamientos
+        // ShakeDetector initialization
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mShakeDetector = new ShakeDetector();
+        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+            @Override
+            public void onShake(int count) {
+                int randomPos = (int) (Math.random() * category.getItems().size());
+                Toast.makeText(getApplicationContext(),category.getItems().get(randomPos),Toast.LENGTH_SHORT);
+            }
+        });
+
+        // Preparamos el resultado por si el usuario no hace cambios.
         prepararResultados();
     }
-
 
 
     @Override
@@ -99,7 +120,7 @@ public class CategoryActivity extends AppCompatActivity {
             case R.id.opciones:
                 return true;
             case R.id.action_nuevo:
-                String newItem = new String("Nueva item");
+                String newItem = new String("Nuevo item");
                 category.newItem(newItem);
                 lista.invalidateViews();
                 prepararResultados();
@@ -109,6 +130,23 @@ public class CategoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Add the following line to register the Session Manager Listener onResume
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+    }
+
+    @Override
+    public void onPause() {
+        // Add the following line to unregister the Sensor Manager onPause
+        mSensorManager.unregisterListener(mShakeDetector);
+        super.onPause();
+    }
+
+    /**
+     * Guarda los cambios en el intent que almacena el resultado para la mainActivity
+     */
     private void prepararResultados(){
         Intent resultado = new Intent();
         resultado.putExtra("categoryName",category.getName());

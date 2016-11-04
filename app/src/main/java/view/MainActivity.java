@@ -146,11 +146,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int ResultCode, Intent result) {
-        Category modifiedCategory = new Category(result.getStringExtra("categoryName"));
-        modifiedCategory.setItems(result.getStringArrayListExtra("categoryItems"));
-        modelList.set(ResultCode, modifiedCategory);
-        lista.invalidateViews();
+    protected void onActivityResult(int requestCode, int resultCode, Intent result) {
+        if (resultCode == requestCode){
+            Category modifiedCategory = new Category(result.getStringExtra("categoryName"));
+            modifiedCategory.setItems(result.getStringArrayListExtra("categoryItems"));
+            modelList.set(resultCode, modifiedCategory);
+            lista.invalidateViews();
+        }
     }
     /**
      * Recupera los datos de la aplicación desde el fichero de persistencia.
