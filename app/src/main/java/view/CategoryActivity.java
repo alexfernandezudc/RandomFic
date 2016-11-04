@@ -46,7 +46,7 @@ public class CategoryActivity extends AppCompatActivity {
         category = new Category(i.getStringExtra("categoryName"));
         category.setItems(i.getStringArrayListExtra("categoryItems"));
 
-        // Instanciamos la toolbar
+        // Instanciamos la toolbar3333
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
