@@ -37,6 +37,8 @@ public class CategoryActivity extends AppCompatActivity {
     private Sensor mAccelerometer;
     private ShakeDetector mShakeDetector;
 
+    private AlertDialog randomAlert = null;
+
     @Override
    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,18 +100,20 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public void onShake(int count) {// Shaking Handler
                 int randomPos = (int) (Math.random() * category.getItems().size());
-                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
-                builder.setTitle("¡Seleccionado aleatoriamente!");
-                builder.setMessage(category.getItems().get(randomPos));
-                builder.setCancelable(true);
-                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
+                if (randomAlert == null || !randomAlert.isShowing()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
+                    builder.setTitle("¡Seleccionado aleatoriamente!");
+                    builder.setMessage(category.getItems().get(randomPos));
+                    builder.setCancelable(true);
+                    builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    randomAlert = builder.create();
+                    randomAlert.show();
+                }
             }
         });
 
