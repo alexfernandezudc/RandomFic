@@ -112,7 +112,25 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.opciones:
-                return true;
+                CharSequence random[] = new CharSequence[] {"Agitar", "Girar dos veces",
+                        "Colocar boca abajo"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Selección random");
+                builder.setItems(random, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.setCancelable(true);
+                builder.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.show();
+                break;
             case R.id.action_nuevo:
                 Category newCategory = new Category("Nueva categoría");
                 modelList.add(newCategory);
