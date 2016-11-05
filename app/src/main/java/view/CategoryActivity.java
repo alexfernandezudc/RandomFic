@@ -96,9 +96,20 @@ public class CategoryActivity extends AppCompatActivity {
         mShakeDetector = new ShakeDetector();
         mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
             @Override
-            public void onShake(int count) {
+            public void onShake(int count) {// Shaking Manager
                 int randomPos = (int) (Math.random() * category.getItems().size());
-                Toast.makeText(getApplicationContext(),category.getItems().get(randomPos),Toast.LENGTH_SHORT);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
+                builder.setTitle("Seleccionado aleatoriamente!");
+                builder.setMessage(category.getItems().get(randomPos));
+                builder.setCancelable(true);
+                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         });
 
