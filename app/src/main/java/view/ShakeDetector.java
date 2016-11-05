@@ -19,10 +19,16 @@ public class ShakeDetector implements SensorEventListener {
     private static final int SHAKE_SLOP_TIME_MS = 500;
     private static final int SHAKE_COUNT_RESET_TIME_MS = 3000;
     private static final int UPSIDE_DOWN_REQUIRED_TIME = 2000;
+    private static final int GIRAR_REQUIRED_TIME = 2000;
+    private static final int ROTATION_TIMES_NEEDED = 2;
 
     private OnShakeListener mListener;
     private long mShakeTimestamp;
     private int mShakeCount;
+    // Girar dos veces
+    private char lastOrientation = 'o';
+    private int orientationChangesCounter;
+    // Boca abajo
     private boolean isUpsideDown = false;
 
     public void setOnShakeListener(OnShakeListener listener) {
@@ -74,7 +80,26 @@ public class ShakeDetector implements SensorEventListener {
                     }
                     break;
                 case 1:
+                    char actualOrientation = getOrientation(x,y);
+                    System.out.println(actualOrientation);
+                    if (actualOrientation == 'o')
+                        return;
 
+                    final long now3 = System.currentTimeMillis();
+
+                    if (actualOrientation != lastOrientation){
+                        lastOrientation = actualOrientation;
+                        if (orientationChangesCounter == 0)
+                            mShakeTimestamp = now3;
+                        orientationChangesCounter++;
+                    }
+
+                    if (orientationChangesCounter >= ROTATION_TIMES_NEEDED)
+                        mListener.onShake(0);
+
+                    if (now3 - mShakeTimestamp > GIRAR_REQUIRED_TIME){
+                        orientationChangesCounter = 0;
+                    }
                     break;
                 case 2:
                     final long now = System.currentTimeMillis();
@@ -92,5 +117,14 @@ public class ShakeDetector implements SensorEventListener {
                     break;
             }
         }
+    }
+
+    private char getOrientation(float x, float y){
+        if ((x > -2 && x < 2) && (y > 7 && y < 13))
+            return 'v';
+        else if ((y > -2 && y < 2) && (x > 7 && x < 13))
+            return 'h';
+        else
+            return 'o';
     }
 }
