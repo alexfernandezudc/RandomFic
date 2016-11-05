@@ -33,6 +33,7 @@ import model.OurAdapter;
 public class MainActivity extends AppCompatActivity {
 
     private final static String PERSISTENCE_FILE = "categorydb";
+    protected static int RANDOM_OPTION = 0;
 
     private ArrayList<Category> modelList;
     private ListView lista = null;
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 builder.setItems(random, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        RANDOM_OPTION = which;
                     }
                 });
                 builder.setCancelable(true);
