@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.brais.myapplication.view.MainActivity">
     <item
-        android:id="@+id/opciones"
+        android:id="@+id/action_random_settings"
         android:orderInCategory="100"
-        android:title="Opciones"
+        android:title="@+id/action_random_settings"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_nuevo"
+        android:id="@+id/action_random_settings_nuevo"
         android:title="@string/action_nuevo"
         android:icon="@drawable/button_add"
         android:orderInCategory="10"

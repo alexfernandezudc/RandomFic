@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">       RandomFic</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_random_settings">Selección aleatoria</string>
     <string name="action_nuevo">   New</string>
     <string name="dialog_title_edit_category">  Editar categoría</string>
     <string name="dialog_positive_button_label">Aceptar</string>
