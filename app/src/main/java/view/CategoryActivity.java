@@ -132,10 +132,10 @@ public class CategoryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.opciones:
+            case R.id.action_random_settings:
                 MainActivity.showRandomOptionsDialog(CategoryActivity.this);
                 break;
-            case R.id.action_nuevo:
+            case R.id.action_new:
                 String newItem = new String("Nuevo item");
                 category.newItem(newItem);
                 lista.invalidateViews();

@@ -5,11 +5,11 @@
     <item
         android:id="@+id/action_random_settings"
         android:orderInCategory="100"
-        android:title="@+id/action_random_settings"
+        android:title="@string/action_random_settings_name"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_random_settings_nuevo"
-        android:title="@string/action_nuevo"
+        android:id="@+id/action_new"
+        android:title="@string/action_new_name"
         android:icon="@drawable/button_add"
         android:orderInCategory="10"
         app:showAsAction="ifRoom" />
