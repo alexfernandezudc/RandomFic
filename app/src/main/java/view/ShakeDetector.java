@@ -19,7 +19,7 @@ public class ShakeDetector implements SensorEventListener {
     private static final int SHAKE_SLOP_TIME_MS = 500;
     private static final int SHAKE_COUNT_RESET_TIME_MS = 3000;
     private static final int UPSIDE_DOWN_REQUIRED_TIME = 2000;
-    private static final int GIRAR_REQUIRED_TIME = 2000;
+    private static final int GIRAR_REQUIRED_TIME = 1000;
     private static final int ROTATION_TIMES_NEEDED = 2;
 
     private OnShakeListener mListener;
@@ -60,65 +60,85 @@ public class ShakeDetector implements SensorEventListener {
             float gForce = (float)Math.sqrt(gX * gX + gY * gY + gZ * gZ);
 
             switch (MainActivity.RANDOM_OPTION){
-                case 0:
-                    if (gForce > SHAKE_THRESHOLD_GRAVITY) {
-                        final long now2 = System.currentTimeMillis();
-                        // ignore shake events too close to each other (500ms)
-                        if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now2) {
-                            return;
-                        }
-
-                        // reset the shake count after 3 seconds of no shakes
-                        if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now2) {
-                            mShakeCount = 0;
-                        }
-
-                        mShakeTimestamp = now2;
-                        mShakeCount++;
-
-                        mListener.onShake(mShakeCount);
-                    }
+                case MainActivity.SHAKE_OPTION:
+                    shakeOption(gForce);
                     break;
-                case 1:
-                    char actualOrientation = getOrientation(x,y);
-                    System.out.println(actualOrientation);
-                    if (actualOrientation == 'o')
-                        return;
-
-                    final long now3 = System.currentTimeMillis();
-
-                    if (actualOrientation != lastOrientation){
-                        lastOrientation = actualOrientation;
-                        if (orientationChangesCounter == 0)
-                            mShakeTimestamp = now3;
-                        orientationChangesCounter++;
-                    }
-
-                    if (orientationChangesCounter >= ROTATION_TIMES_NEEDED)
-                        mListener.onShake(0);
-
-                    if (now3 - mShakeTimestamp > GIRAR_REQUIRED_TIME){
-                        orientationChangesCounter = 0;
-                    }
+                case MainActivity.ROTATION_OPTION:
+                    rotationOption(x,y);
                     break;
-                case 2:
-                    final long now = System.currentTimeMillis();
-                    if (z > -5){ // Si el smartphone está boca abajo
-                        if (isUpsideDown == false)  // Y acaba de cambiarse
-                            mShakeTimestamp = now;  // Tomamos nota del momento
-                        isUpsideDown = true;
-                    } else {    // Si está boca arriba
-                        if (now - mShakeTimestamp > UPSIDE_DOWN_REQUIRED_TIME) {  // Comprobamos que haya pasado el tiempo necesario
-                            mListener.onShake(0);
-                            mShakeTimestamp = now;
-                        }
-                        isUpsideDown = false;   // Anotamos que ahora ya no está boca abajo
-                    }
+                case MainActivity.UPSIDE_DOWN_OPTION:
+                    upsideDownOption(z);
                     break;
             }
         }
     }
 
+    private void shakeOption(float gForce){
+        if (gForce > SHAKE_THRESHOLD_GRAVITY) {
+            final long now = System.currentTimeMillis();
+            // ignore shake events too close to each other (500ms)
+            if (mShakeTimestamp + SHAKE_SLOP_TIME_MS > now) {
+                return;
+            }
+
+            // reset the shake count after 3 seconds of no shakes
+            if (mShakeTimestamp + SHAKE_COUNT_RESET_TIME_MS < now) {
+                mShakeCount = 0;
+            }
+
+            mShakeTimestamp = now;
+            mShakeCount++;
+
+            mListener.onShake(mShakeCount);
+        }
+    }
+
+    private void rotationOption(float x, float y){
+        char actualOrientation = getOrientation(x,y);
+
+        if (actualOrientation == 'o')
+            return;
+
+        final long now = System.currentTimeMillis();
+        //
+        if (actualOrientation != lastOrientation){
+            lastOrientation = actualOrientation;
+            if (orientationChangesCounter == 0)
+                mShakeTimestamp = now;
+            orientationChangesCounter++;
+        }
+        // Si se cambia de orientación el número de veces necesario hay que resetear y lanzar la acción.
+        if ((orientationChangesCounter >= ROTATION_TIMES_NEEDED)) {
+            mListener.onShake(0);
+            orientationChangesCounter = 0;
+        }
+        // Si pasa el tiempo máximo se resetea el contador.
+        if (now - mShakeTimestamp > GIRAR_REQUIRED_TIME)
+            orientationChangesCounter = 0;
+
+    }
+
+    private void upsideDownOption(float z){
+        final long now = System.currentTimeMillis();
+        if (z > -5){ // Si el smartphone está boca abajo
+            if (isUpsideDown == false)  // Y acaba de cambiarse
+                mShakeTimestamp = now;  // Tomamos nota del momento
+            isUpsideDown = true;
+        } else {    // Si está boca arriba
+            if (now - mShakeTimestamp > UPSIDE_DOWN_REQUIRED_TIME) {  // Comprobamos que haya pasado el tiempo necesario
+                mListener.onShake(0);
+                mShakeTimestamp = now;
+            }
+            isUpsideDown = false;   // Anotamos que ahora ya no está boca abajo
+        }
+    }
+
+    /**
+     * Devuelve la orientación (vertical, horizontal u otro) en función de su posicón x e y.
+     * @param x : eje x según el acelerómetro.
+     * @param y : eje y según el acelerómetro.
+     * @return 'v' = vertical, 'h' = horizonal, 'o' = otro.
+     */
     private char getOrientation(float x, float y){
         if ((x > -2 && x < 2) && (y > 7 && y < 13))
             return 'v';

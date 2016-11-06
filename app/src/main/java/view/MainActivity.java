@@ -33,7 +33,12 @@ import model.OurAdapter;
 public class MainActivity extends AppCompatActivity {
 
     private final static String PERSISTENCE_FILE = "categorydb";
+
     protected static int RANDOM_OPTION = 0;
+    protected final static int SHAKE_OPTION = 0;
+    protected final static int ROTATION_OPTION = 1;
+    protected final static int UPSIDE_DOWN_OPTION = 2;
+
 
     private ArrayList<Category> modelList;
     private ListView lista = null;
