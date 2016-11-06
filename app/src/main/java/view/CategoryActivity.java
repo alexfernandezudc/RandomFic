@@ -133,7 +133,8 @@ public class CategoryActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.opciones:
-                return true;
+                MainActivity.showRandomOptionsDialog(CategoryActivity.this);
+                break;
             case R.id.action_nuevo:
                 String newItem = new String("Nuevo item");
                 category.newItem(newItem);

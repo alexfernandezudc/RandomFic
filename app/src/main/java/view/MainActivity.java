@@ -34,7 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String PERSISTENCE_FILE = "categorydb";
 
-    // random option variables
+    // Random option names
+    private static CharSequence randomOptionNames[] =  new CharSequence[] {"Agitar", "Girar dos veces", "Colocar boca abajo"};
+
+    // Random option variables
     protected static int RANDOM_OPTION = 0;
     protected final static int SHAKE_OPTION = 0;
     protected final static int ROTATION_OPTION = 1;
@@ -119,24 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.opciones:
-                CharSequence random[] = new CharSequence[] {"Agitar", "Girar dos veces",
-                        "Colocar boca abajo"};
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Selección random");
-                builder.setItems(random, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        RANDOM_OPTION = which;
-                    }
-                });
-                builder.setCancelable(true);
-                builder.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-                builder.show();
+                showRandomOptionsDialog(MainActivity.this);
                 break;
             case R.id.action_nuevo:
                 Category newCategory = new Category("Nueva categoría");
@@ -179,6 +165,26 @@ public class MainActivity extends AppCompatActivity {
             lista.invalidateViews();
         }
     }
+
+    protected static void showRandomOptionsDialog(Context context){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Selección random");
+        builder.setItems(randomOptionNames, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                RANDOM_OPTION = which;
+            }
+        });
+        builder.setCancelable(true);
+        builder.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.show();
+    }
+
     /**
      * Recupera los datos de la aplicación desde el fichero de persistencia.
     **/
@@ -190,13 +196,12 @@ public class MainActivity extends AppCompatActivity {
                 InputStreamReader inReader = new InputStreamReader(inStream);
                 BufferedReader buffReader  = new BufferedReader(inReader);
 
-                String line = "";
-
+                String line;
                 while ((line = buffReader.readLine()) != null){
                     System.out.println(line);
                     String [] items = line.split(",");
                     Category newCategory = new Category(items[0]);
-                    int i = 1;
+                    int i;
                     for (i=1;items.length > i;i++)
                         newCategory.newItem(items[i]);
                     modelList.add(newCategory);
@@ -207,9 +212,9 @@ public class MainActivity extends AppCompatActivity {
             lista.invalidateViews();
 
         }  catch (FileNotFoundException e){
-            System.out.println(e + " | PERSISTENCE FILE NO ENCONTRADA");
+            System.err.println(e + " | PERSISTENCE FILE NO ENCONTRADA");
         } catch (IOException e){
-            System.out.println(e);
+            System.err.println(e);
         }
     }
 
