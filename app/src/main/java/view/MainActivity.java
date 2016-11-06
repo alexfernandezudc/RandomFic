@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String PERSISTENCE_FILE = "categorydb";
 
+    // random option variables
     protected static int RANDOM_OPTION = 0;
     protected final static int SHAKE_OPTION = 0;
     protected final static int ROTATION_OPTION = 1;
