@@ -38,7 +38,7 @@ public class CategoryActivity extends AppCompatActivity {
     private Detector mDetector;
 
     private AlertDialog randomAlert = null;
-    // How to do when sensor calls onRandomSelect()
+    // How to do when sensor calls onRandomSelect()void
     private OnRandomSelectListener rslistener = new OnRandomSelectListener(){
         @Override
         public void onRandomSelect() {// Shaking Handler
