@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -16,12 +17,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.brais.myapplication.R;
 
 import model.Category;
-import model.CategoryAdapter;
 import model.OurAdapter;
 
 /**
@@ -34,8 +33,8 @@ public class CategoryActivity extends AppCompatActivity {
     private ListView lista = null;
     // Atributos ligados al sensor de agitamiento
     private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private ShakeDetector mShakeDetector;
+    private Sensor mSensor;
+    private Detector mDetector;
 
     private AlertDialog randomAlert = null;
 
@@ -48,19 +47,19 @@ public class CategoryActivity extends AppCompatActivity {
         category = new Category(i.getStringExtra("categoryName"));
         category.setItems(i.getStringArrayListExtra("categoryItems"));
 
-        // Instanciamos la toolbar3333
+        // Instanciamos la toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Nombre de la actividad
-        setTitle(category.getName());
+        setTitle("Categoría: " + category.getName());
 
         // Preparamos el adaptador
         final OurAdapter adapter = new OurAdapter(category.getItems(), this);
         lista = (ListView) findViewById(R.id.listView);
         lista.setAdapter(adapter);
         lista.setLongClickable(true);
-
+        // Handler: pulsación larga en fila.
         lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view, final int pos, long id) {
@@ -92,13 +91,18 @@ public class CategoryActivity extends AppCompatActivity {
             }
         });
         // Preparamos el detector de agitamientos
-        // ShakeDetector initialization
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
+        // Dependiendo del hardware elegiremos un sensor u otro
+        if ((mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
+            mDetector = new ShakeDetector2();
+        else {
+            mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            mDetector = new UpsideDownDetector();
+        }
+        // Handler: activar el sensor de turno.
+        mDetector.setOnRandomSelectListener(new OnRandomSelectListener() {
             @Override
-            public void onShake(int count) {// Shaking Handler
+            public void onRandomSelect() {// Shaking Handler
                 int randomPos = (int) (Math.random() * category.getItems().size());
                 if (randomAlert == null || !randomAlert.isShowing()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
@@ -149,14 +153,12 @@ public class CategoryActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        // Add the following line to register the Session Manager Listener onResume
-        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(mDetector, mSensor,	SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
     public void onPause() {
-        // Add the following line to unregister the Sensor Manager onPause
-        mSensorManager.unregisterListener(mShakeDetector);
+        mSensorManager.unregisterListener(mDetector);
         super.onPause();
     }
 
