@@ -3,6 +3,9 @@ package view;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.brais.myapplication.R;
 
@@ -35,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private final static String PERSISTENCE_FILE = "categorydb";
 
     // Random option names
-    private static CharSequence randomOptionNames[] =  new CharSequence[] {"Agitar", "Girar dos veces", "Colocar boca abajo"};
+    protected static CharSequence randomOptionNames[] =  new CharSequence[] {"Agitar", "Girar dos veces", "Colocar boca abajo"};
+    protected static boolean aviableRandomOptions[] = new boolean[3];
 
     // Random option variables
     protected static int RANDOM_OPTION = 0;
@@ -52,12 +57,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Comprobar qué sensores hay disponibles --------------------------------------------------
+        SensorManager sMan =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor sen = null;
+        int i = 0;
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
+            aviableRandomOptions[i++] = true;
+        else
+            aviableRandomOptions[i++] = false;
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_GYROSCOPE)) != null)
+            aviableRandomOptions[i++] = true;
+        else
+            aviableRandomOptions[i++] = false;
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_PROXIMITY)) != null)
+            aviableRandomOptions[i++] = true;
+        else
+            aviableRandomOptions[i++] = false;
+        // ----------------------------------------------------------------------------------------
         this.modelList = new ArrayList<>();
-        // Instanciamos la toolbar
+
+        // Instanciamos la toolbar ----------------------------------------------------------------
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Preparamos el adaptador
+        // Preparamos el adaptador ................................................................
         final CategoryAdapter adapter = new CategoryAdapter(modelList, this);
         lista = (ListView) findViewById(R.id.listView);
         lista.setAdapter(adapter);
@@ -122,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.action_random_settings:
-                showRandomOptionsDialog(MainActivity.this);
+                showRandomOptionsDialog();
                 break;
             case R.id.action_new:
                 Category newCategory = new Category("Nueva categoría");
@@ -166,13 +189,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected static void showRandomOptionsDialog(Context context){
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    /**
+     * Muestra un diálogo que te permite elegir el método de selección aleatoria.
+     */
+    protected void showRandomOptionsDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Selección random");
         builder.setItems(randomOptionNames, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 RANDOM_OPTION = which;
+                if (aviableRandomOptions[which])
+                    RANDOM_OPTION = which;
+                else
+                    Toast.makeText(MainActivity.this, "Tu smartphone no dispone del hardware necesario. Escoja otra.", Toast.LENGTH_LONG).show();
             }
         });
         builder.setCancelable(true);

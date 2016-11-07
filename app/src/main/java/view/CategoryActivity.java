@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.brais.myapplication.R;
 
@@ -54,7 +55,7 @@ public class CategoryActivity extends AppCompatActivity {
         // Nombre de la actividad
         setTitle("Categoría: " + category.getName());
 
-        // Preparamos el adaptador
+        // Preparamos el adaptador de la lista ----------------------------------------------------
         final OurAdapter adapter = new OurAdapter(category.getItems(), this);
         lista = (ListView) findViewById(R.id.listView);
         lista.setAdapter(adapter);
@@ -90,15 +91,19 @@ public class CategoryActivity extends AppCompatActivity {
                 return true;
             }
         });
-        // Preparamos el detector de agitamientos
+
+        // Preparamos los sensores para la selección aleatoria ------------------------------------
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        /**
         // Dependiendo del hardware elegiremos un sensor u otro
         if ((mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
             mDetector = new ShakeDetector2();
         else {
             mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
             mDetector = new UpsideDownDetector();
-        }
+        }**/
+        updateSensor();
+
         // Handler: activar el sensor de turno.
         mDetector.setOnRandomSelectListener(new OnRandomSelectListener() {
             @Override
@@ -132,12 +137,13 @@ public class CategoryActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
             case R.id.action_random_settings:
-                MainActivity.showRandomOptionsDialog(CategoryActivity.this);
+                showRandomOptionsDialog();
                 break;
             case R.id.action_new:
                 String newItem = new String("Nuevo item");
@@ -150,17 +156,20 @@ public class CategoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
         mSensorManager.registerListener(mDetector, mSensor,	SensorManager.SENSOR_DELAY_UI);
     }
 
+
     @Override
     public void onPause() {
         mSensorManager.unregisterListener(mDetector);
         super.onPause();
     }
+
 
     /**
      * Guarda los cambios en el intent que almacena el resultado para la mainActivity
@@ -170,6 +179,55 @@ public class CategoryActivity extends AppCompatActivity {
         resultado.putExtra("categoryName",category.getName());
         resultado.putExtra("categoryItems",category.getItems());
         setResult(getIntent().getIntExtra("pos",0),resultado);
+    }
+
+    protected void showRandomOptionsDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Selección random");
+        builder.setItems(MainActivity.randomOptionNames, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (MainActivity.aviableRandomOptions[which]) {
+                    MainActivity.RANDOM_OPTION = which;
+                    updateSensor();
+                } else
+                    Toast.makeText(CategoryActivity.this,"Tu smartphone no dispone del hardware necesario. Escoja otra.",Toast.LENGTH_LONG).show();
+            }
+        });
+        builder.setCancelable(true);
+        builder.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    /**
+     * Actualiza el sensor para la selección aleatoria en función del seleccionado actualmente.
+     */
+    private void updateSensor() {
+        switch (MainActivity.RANDOM_OPTION) {
+            case 0:
+                if (MainActivity.aviableRandomOptions[0]) {
+                    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                    mDetector = new ShakeDetector2();
+                    break;
+                }
+            case 1:
+                if (MainActivity.aviableRandomOptions[1]) {
+                    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+                    mDetector = new UpsideDownDetector();
+                    break;
+                }
+            case 2:
+                if (MainActivity.aviableRandomOptions[2]) {
+                    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+                    mDetector = new UpsideDownDetector();
+                    break;
+                }
+        }
     }
 
 }
