@@ -208,23 +208,28 @@ public class CategoryActivity extends AppCompatActivity {
      * Actualiza el sensor para la selección aleatoria en función del seleccionado actualmente.
      */
     private void updateSensor() {
+        if (mDetector != null)
+            mSensorManager.unregisterListener(mDetector);
         switch (MainActivity.RANDOM_OPTION) {
             case 0:
                 if (MainActivity.aviableRandomOptions[0]) {
                     mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                     mDetector = new ShakeDetector2();
+                    mSensorManager.registerListener(mDetector, mSensor,	SensorManager.SENSOR_DELAY_UI);
                     break;
                 }
             case 1:
                 if (MainActivity.aviableRandomOptions[1]) {
                     mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
                     mDetector = new UpsideDownDetector();
+                    mSensorManager.registerListener(mDetector, mSensor,	SensorManager.SENSOR_DELAY_UI);
                     break;
                 }
             case 2:
                 if (MainActivity.aviableRandomOptions[2]) {
                     mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
                     mDetector = new UpsideDownDetector();
+                    mSensorManager.registerListener(mDetector, mSensor,	SensorManager.SENSOR_DELAY_UI);
                     break;
                 }
         }
