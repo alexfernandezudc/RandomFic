@@ -21,6 +21,6 @@ public class UpsideDownDetector implements Detector {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+        float x = event.values[0];
     }
 }

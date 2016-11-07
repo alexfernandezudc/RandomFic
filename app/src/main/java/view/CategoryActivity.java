@@ -94,14 +94,6 @@ public class CategoryActivity extends AppCompatActivity {
 
         // Preparamos los sensores para la selección aleatoria ------------------------------------
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        /**
-        // Dependiendo del hardware elegiremos un sensor u otro
-        if ((mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
-            mDetector = new ShakeDetector2();
-        else {
-            mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            mDetector = new UpsideDownDetector();
-        }**/
         updateSensor();
 
         // Handler: activar el sensor de turno.
