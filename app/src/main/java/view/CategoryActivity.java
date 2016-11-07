@@ -116,7 +116,6 @@ public class CategoryActivity extends AppCompatActivity {
         // Preparamos los sensores para la selección aleatoria ------------------------------------
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         updateSensor();
-
         // Handler: activar el sensor de turno.
         mDetector.setOnRandomSelectListener(rslistener);
 
