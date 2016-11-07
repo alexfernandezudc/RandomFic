@@ -10,7 +10,9 @@ import android.hardware.SensorEventListener;
 
 public class UpsideDownDetector implements Detector {
 
-    OnRandomSelectListener mListener;
+    private OnRandomSelectListener mListener;
+    private long mTimestamp;
+    private boolean mAntes = false;
 
     public void setOnRandomSelectListener(OnRandomSelectListener listener){this.mListener = listener;}
 
@@ -21,6 +23,24 @@ public class UpsideDownDetector implements Detector {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float x = event.values[0];
+        float dis = event.values[0];
+        long now = System.currentTimeMillis();
+        boolean mAhora;
+
+        if (dis < 10)
+            mAhora = true;
+        else
+            mAhora = false;
+
+        if (mAhora == true)
+            mTimestamp = now;
+
+        if (mAhora == false && mAntes == true) {
+            long tiempoTranscurrido = now - mTimestamp;
+            if (tiempoTranscurrido > 1000)
+                mListener.onRandomSelect();
+        }
+        mAntes = mAhora;
+
     }
 }

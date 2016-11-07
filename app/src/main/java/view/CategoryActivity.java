@@ -38,6 +38,27 @@ public class CategoryActivity extends AppCompatActivity {
     private Detector mDetector;
 
     private AlertDialog randomAlert = null;
+    // How to do when sensor calls onRandomSelect()
+    private OnRandomSelectListener rslistener = new OnRandomSelectListener(){
+        @Override
+        public void onRandomSelect() {// Shaking Handler
+            int randomPos = (int) (Math.random() * category.getItems().size());
+            if (randomAlert == null || !randomAlert.isShowing()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
+                builder.setTitle("¡Seleccionado aleatoriamente!");
+                builder.setMessage(category.getItems().get(randomPos));
+                builder.setCancelable(true);
+                builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                randomAlert = builder.create();
+                randomAlert.show();
+            }
+        }
+    };
 
     @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -97,26 +118,7 @@ public class CategoryActivity extends AppCompatActivity {
         updateSensor();
 
         // Handler: activar el sensor de turno.
-        mDetector.setOnRandomSelectListener(new OnRandomSelectListener() {
-            @Override
-            public void onRandomSelect() {// Shaking Handler
-                int randomPos = (int) (Math.random() * category.getItems().size());
-                if (randomAlert == null || !randomAlert.isShowing()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
-                    builder.setTitle("¡Seleccionado aleatoriamente!");
-                    builder.setMessage(category.getItems().get(randomPos));
-                    builder.setCancelable(true);
-                    builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }
-                    });
-                    randomAlert = builder.create();
-                    randomAlert.show();
-                }
-            }
-        });
+        mDetector.setOnRandomSelectListener(rslistener);
 
         // Preparamos el resultado por si el usuario no hace cambios.
         prepararResultados();
@@ -225,6 +227,7 @@ public class CategoryActivity extends AppCompatActivity {
                     break;
                 }
         }
+        mDetector.setOnRandomSelectListener(rslistener);
     }
 
 }
