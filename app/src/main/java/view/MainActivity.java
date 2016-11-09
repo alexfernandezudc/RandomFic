@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             aviableRandomOptions[i++] = true;
         else
             aviableRandomOptions[i++] = false;
-        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_GYROSCOPE)) != null)
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
             aviableRandomOptions[i++] = true;
         else
             aviableRandomOptions[i++] = false;

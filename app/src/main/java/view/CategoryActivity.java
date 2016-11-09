@@ -213,8 +213,8 @@ public class CategoryActivity extends AppCompatActivity {
                 }
             case 1:
                 if (MainActivity.aviableRandomOptions[1]) {
-                    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-                    mDetector = new UpsideDownDetector();
+                    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                    mDetector = new RotationDetector();
                     mSensorManager.registerListener(mDetector, mSensor,	SensorManager.SENSOR_DELAY_UI);
                     break;
                 }

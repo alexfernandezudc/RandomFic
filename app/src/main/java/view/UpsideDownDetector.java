@@ -41,6 +41,5 @@ public class UpsideDownDetector implements Detector {
                 mListener.onRandomSelect();
         }
         mAntes = mAhora;
-
     }
 }
