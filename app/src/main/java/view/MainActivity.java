@@ -1,5 +1,6 @@
 package view;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,13 +10,16 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.MenuInflater;
+import android.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,12 +33,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 import model.Category;
 import model.CategoryAdapter;
 import model.OurAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Fragment {
 
     private final static String PERSISTENCE_FILE = "categorydb";
 
@@ -53,36 +58,12 @@ public class MainActivity extends AppCompatActivity {
     private ListView lista = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        //Comprobar qué sensores hay disponibles --------------------------------------------------
-        SensorManager sMan =  (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        Sensor sen = null;
-        int i = 0;
-        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
-            aviableRandomOptions[i++] = true;
-        else
-            aviableRandomOptions[i++] = false;
-        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
-            aviableRandomOptions[i++] = true;
-        else
-            aviableRandomOptions[i++] = false;
-        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_PROXIMITY)) != null)
-            aviableRandomOptions[i++] = true;
-        else
-            aviableRandomOptions[i++] = false;
-        // ----------------------------------------------------------------------------------------
-        this.modelList = new ArrayList<>();
-
-        // Instanciamos la toolbar ----------------------------------------------------------------
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.activity_main, container, false);
 
         // Preparamos el adaptador ................................................................
-        final CategoryAdapter adapter = new CategoryAdapter(modelList, this);
-        lista = (ListView) findViewById(R.id.listView);
+        final CategoryAdapter adapter = new CategoryAdapter(modelList, layout.getContext());
+        lista = (ListView) layout.findViewById(R.id.listView);
         lista.setAdapter(adapter);
         lista.setClickable(true);
         lista.setLongClickable(true);
@@ -105,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view, final int pos, long id) {
                 // Instanciamos el dialogo y añadimos el manejador del botón aceptar
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                LayoutInflater inflater = getLayoutInflater();
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = inflater;
                 final View v = inflater.inflate(R.layout.input_dialog, null);
                 builder.setView(v);
                 builder.setTitle(R.string.dialog_title_edit_category);
@@ -131,13 +112,45 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        return layout;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        //Comprobar qué sensores hay disponibles --------------------------------------------------
+        SensorManager sMan =  (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        Sensor sen = null;
+        int i = 0;
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
+            aviableRandomOptions[i++] = true;
+        else
+            aviableRandomOptions[i++] = false;
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)) != null)
+            aviableRandomOptions[i++] = true;
+        else
+            aviableRandomOptions[i++] = false;
+        if ((sen = sMan.getDefaultSensor(Sensor.TYPE_PROXIMITY)) != null)
+            aviableRandomOptions[i++] = true;
+        else
+            aviableRandomOptions[i++] = false;
+        // ----------------------------------------------------------------------------------------
+        this.modelList = new ArrayList<>();
+
+        // Instanciamos la toolbar ----------------------------------------------------------------
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        getActivity().setActionBar(toolbar);
+
+
         cargarCategorias();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu,inflater);
     }
 
     @Override
@@ -162,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStop(){
         super.onStop();
         try {
-            FileOutputStream outFile = openFileOutput(PERSISTENCE_FILE, Context.MODE_PRIVATE);
+            FileOutputStream outFile = getActivity().openFileOutput(PERSISTENCE_FILE, Context.MODE_PRIVATE);
             OutputStreamWriter out = new OutputStreamWriter(outFile);
             for (Category c : modelList) {
                 out.write(c.getName() + ",");
@@ -178,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(e);
         }
     }
-
+/**
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
         if (resultCode == requestCode){
@@ -188,12 +201,12 @@ public class MainActivity extends AppCompatActivity {
             lista.invalidateViews();
         }
     }
-
+**/
     /**
      * Muestra un diálogo que te permite elegir el método de selección aleatoria.
      */
     protected void showRandomOptionsDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Selección random");
         builder.setItems(randomOptionNames, new DialogInterface.OnClickListener() {
             @Override
@@ -202,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                 if (aviableRandomOptions[which])
                     RANDOM_OPTION = which;
                 else
-                    Toast.makeText(MainActivity.this, "Tu smartphone no dispone del hardware necesario. Escoja otra.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Tu smartphone no dispone del hardware necesario. Escoja otra.", Toast.LENGTH_LONG).show();
             }
         });
         builder.setCancelable(true);
@@ -220,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
     **/
     private void cargarCategorias(){
         try{
-            InputStream inStream = openFileInput(PERSISTENCE_FILE);
+            InputStream inStream = getActivity().openFileInput(PERSISTENCE_FILE);
 
             if (inStream != null){
                 InputStreamReader inReader = new InputStreamReader(inStream);
