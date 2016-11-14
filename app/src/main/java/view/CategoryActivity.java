@@ -7,15 +7,20 @@ import android.hardware.Sensor;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.view.MenuInflater;
+import android.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,11 +29,12 @@ import com.example.brais.myapplication.R;
 import model.Category;
 import model.OurAdapter;
 
+
 /**
  * Created by Brais on 02/11/2016.
  */
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends Fragment{
 
     private Category category = null;
     private ListView lista = null;
@@ -36,6 +42,9 @@ public class CategoryActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private Sensor mSensor;
     private Detector mDetector;
+    // Atributos para onCreateView
+    private LinearLayout ll;
+    private FragmentActivity fa;
 
     private AlertDialog randomAlert = null;
     // How to do when sensor calls onRandomSelect()void
@@ -44,7 +53,7 @@ public class CategoryActivity extends AppCompatActivity {
         public void onRandomSelect() {// Shaking Handler
             int randomPos = (int) (Math.random() * category.getItems().size());
             if (randomAlert == null || !randomAlert.isShowing()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this.getActivity());
                 builder.setTitle("¡Seleccionado aleatoriamente!");
                 builder.setMessage(category.getItems().get(randomPos));
                 builder.setCancelable(true);
@@ -61,24 +70,25 @@ public class CategoryActivity extends AppCompatActivity {
     };
 
     @Override
-   protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Instanciar la categoría
-        Intent i = getIntent();
+        fa = super.getActivity();
+        ll = (LinearLayout) inflater.inflate(R.layout.activity_main, container, false);
+        i = fa.getIntent();
+
         category = new Category(i.getStringExtra("categoryName"));
         category.setItems(i.getStringArrayListExtra("categoryItems"));
 
         // Instanciamos la toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) ll.findViewById(R.id.toolbar);
+        getActivity().setActionBar(toolbar);
 
         // Nombre de la actividad
-        setTitle("Categoría: " + category.getName());
+        getActivity().setTitle("Categoría: " + category.getName());
 
         // Preparamos el adaptador de la lista ----------------------------------------------------
-        final OurAdapter adapter = new OurAdapter(category.getItems(), this);
-        lista = (ListView) findViewById(R.id.listView);
+        final OurAdapter adapter = new OurAdapter(category.getItems(), this.getActivity());
+        lista = (ListView) ll.findViewById(R.id.listView);
         lista.setAdapter(adapter);
         lista.setLongClickable(true);
         // Handler: pulsación larga en fila.
@@ -86,8 +96,8 @@ public class CategoryActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view, final int pos, long id) {
                 // Instanciamos el dialogo y añadimos el manejador del botón aceptar
-                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this);
-                LayoutInflater inflater = getLayoutInflater();
+                AlertDialog.Builder builder = new AlertDialog.Builder(CategoryActivity.this.getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
                 final View v = inflater.inflate(R.layout.input_dialog, null);
                 builder.setView(v);
                 builder.setTitle(R.string.dialog_title_edit_category);
@@ -114,20 +124,22 @@ public class CategoryActivity extends AppCompatActivity {
         });
 
         // Preparamos los sensores para la selección aleatoria ------------------------------------
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         updateSensor();
         // Handler: activar el sensor de turno.
         mDetector.setOnRandomSelectListener(rslistener);
 
         // Preparamos el resultado por si el usuario no hace cambios.
         prepararResultados();
+
+        return ll;
     }
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
 
@@ -171,11 +183,11 @@ public class CategoryActivity extends AppCompatActivity {
         Intent resultado = new Intent();
         resultado.putExtra("categoryName",category.getName());
         resultado.putExtra("categoryItems",category.getItems());
-        setResult(getIntent().getIntExtra("pos",0),resultado);
+        getActivity().setResult(getActivity().getIntent().getIntExtra("pos",0),resultado);
     }
 
     protected void showRandomOptionsDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
         builder.setTitle("Selección random");
         builder.setItems(MainActivity.randomOptionNames, new DialogInterface.OnClickListener() {
             @Override
@@ -184,7 +196,7 @@ public class CategoryActivity extends AppCompatActivity {
                     MainActivity.RANDOM_OPTION = which;
                     updateSensor();
                 } else
-                    Toast.makeText(CategoryActivity.this,"Tu smartphone no dispone del hardware necesario. Escoja otra.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(CategoryActivity.this.getActivity(),"Tu smartphone no dispone del hardware necesario. Escoja otra.",Toast.LENGTH_LONG).show();
             }
         });
         builder.setCancelable(true);
