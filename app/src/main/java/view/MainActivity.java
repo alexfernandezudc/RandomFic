@@ -67,7 +67,7 @@ public class MainActivity extends Fragment {
         lista.setAdapter(adapter);
         lista.setClickable(true);
         lista.setLongClickable(true);
-
+/**
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> av, View view, final int pos, long id){
@@ -80,14 +80,15 @@ public class MainActivity extends Fragment {
                 // Arrancar nueva actividad
                 startActivityForResult(i,pos);
             }
-        });
 
+        });
+**/
         lista.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View view, final int pos, long id) {
                 // Instanciamos el dialogo y añadimos el manejador del botón aceptar
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = inflater;
+                LayoutInflater inflater = getActivity().getLayoutInflater();
                 final View v = inflater.inflate(R.layout.input_dialog, null);
                 builder.setView(v);
                 builder.setTitle(R.string.dialog_title_edit_category);
@@ -112,6 +113,8 @@ public class MainActivity extends Fragment {
                 return true;
             }
         });
+
+        cargarCategorias();
 
         return layout;
     }
@@ -143,8 +146,6 @@ public class MainActivity extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         getActivity().setActionBar(toolbar);
 
-
-        cargarCategorias();
     }
 
     @Override
